@@ -1,0 +1,156 @@
+// ========================================
+// Design Tokens - matching Edu-uniapp
+// ========================================
+
+// Brand Colors
+$primary-color: #5B6CFF;
+$primary-light: #B1F0FF;
+$primary-dark: #4A5AE0;
+$primary-bg: #eef1f5;
+
+// Text Colors
+$text-primary: #333333;
+$text-secondary: #666666;
+$text-hint: #999999;
+
+// Background Colors
+$bg-page: #eef1f5;
+$bg-white: #ffffff;
+$bg-card: rgba(255, 255, 255, 0.5);
+
+// Border Radius
+$radius-sm: 6px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-round: 50%;
+
+// Shadows
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 20px;
+$spacing-xxl: 24px;
+
+// ========================================
+// Element Plus Theme Override
+// ========================================
+
+:root {
+  --el-color-primary: #5B6CFF;
+  --el-color-primary-light-3: #7B89FF;
+  --el-color-primary-light-5: #9BA6FF;
+  --el-color-primary-light-7: #BBC2FF;
+  --el-color-primary-light-8: #CDD2FF;
+  --el-color-primary-light-9: #DEE1FF;
+  --el-color-primary-dark-2: #4A5AE0;
+  --el-color-success: #67c23a;
+  --el-color-warning: #e6a23c;
+  --el-color-danger: #f56c6c;
+  --el-color-info: #909399;
+  --el-bg-color: #eef1f5;
+  --el-bg-color-page: #eef1f5;
+  --el-border-radius-base: 6px;
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 20px;
+  --el-font-size-base: 14px;
+}
+
+// ========================================
+// Global Utility Classes
+// ========================================
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: $text-primary;
+  padding-left: 12px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 18px;
+    background: $primary-color;
+    border-radius: 2px;
+  }
+}
+
+// Page container
+.page-container {
+  padding: 20px;
+  min-height: calc(100vh - 60px);
+}
+
+// Search bar
+.search-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+// Card header with action
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Status tags
+.status-active {
+  color: #67c23a;
+}
+
+.status-inactive {
+  color: #909399;
+}
+
+// Override Element Plus card style
+.el-card {
+  border-radius: $radius-md !important;
+  border: none !important;
+  box-shadow: $shadow-sm !important;
+}
+
+// Override Element Plus table header
+.el-table {
+  --el-table-header-bg-color: #f5f7fa;
+  border-radius: $radius-md;
+}
+
+// Override Element Plus button
+.el-button--primary {
+  --el-button-bg-color: #5B6CFF;
+  --el-button-border-color: #5B6CFF;
+}
+
+// Override menu
+.el-menu {
+  border-right: none !important;
+}

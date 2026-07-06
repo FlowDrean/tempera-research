@@ -1,0 +1,44 @@
+# 依赖
+node_modules/
+.pnp
+.pnp.js
+
+# 构建产物
+dist/
+build/
+target/
+*.local
+
+# 运行时上传文件（含大体积视频，超出 Gitee 单文件限制）
+uploads/
+
+# 编辑器/IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+Thumbs.db
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 缓存
+.cache/
+.temp/
+.eslintcache
+
+# 系统文件
+*.swp
+*.swo

@@ -1,0 +1,104 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^c-(.*)": "@/components/$1.vue"
+    }
+  },
+  "pages": [
+    {
+      "path": "pages/home/home",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/project/project",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/video/video",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/user/user",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/project-detail/project-detail",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/competition/competition",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/competition-detail/competition-detail",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/research/research",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/research-detail/research-detail",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/video-player/video-player",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/apply/apply",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/apply-success/apply-success",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/login/login",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/search/search",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/my-applications/my-applications",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/my-favorites/my-favorites",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/register/register",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/chat/chat",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/promo/promo",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#B1F0FF"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#333333",
+    "selectedColor": "#5B6CFF",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/project/project", "text": "课题" },
+      { "pagePath": "pages/video/video", "text": "专访视频" },
+      { "pagePath": "pages/user/user", "text": "我的" }
+    ]
+  }
+}
