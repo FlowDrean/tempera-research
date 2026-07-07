@@ -266,11 +266,28 @@ const onExploreTap = (card) => {
       case 'course':
         uni.navigateTo({ url: `/pages/project-detail/project-detail?id=${card.linkValue}` })
         break
+      case 'course_list':
+        uni.switchTab({ url: '/pages/project/project' })
+        break
+      case 'course_mode':
+        uni.$emit('filterMode', '实践1V1定制')
+        uni.switchTab({ url: '/pages/project/project' })
+        break
+      case 'course_field':
+        uni.$emit('filterField', '海外课题')
+        uni.switchTab({ url: '/pages/project/project' })
+        break
       case 'competition':
         uni.navigateTo({ url: `/pages/competition-detail/competition-detail?id=${card.linkValue}` })
         break
+      case 'competition_list':
+        uni.navigateTo({ url: '/pages/competition/competition' })
+        break
       case 'research':
         uni.navigateTo({ url: `/pages/research-detail/research-detail?id=${card.linkValue}` })
+        break
+      case 'research_list':
+        uni.navigateTo({ url: '/pages/research/research' })
         break
       case 'video':
         uni.navigateTo({ url: `/pages/video-player/video-player?id=${card.linkValue}` })

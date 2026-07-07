@@ -209,9 +209,14 @@
             <el-form-item label="跳转类型">
               <el-select v-model="form.linkType" placeholder="无跳转" style="width: 100%" clearable>
                 <el-option label="无跳转" value="" />
-                <el-option label="课题" value="course" />
-                <el-option label="竞赛" value="competition" />
-                <el-option label="研学" value="research" />
+                <el-option label="课题详情" value="course" />
+                <el-option label="课题列表" value="course_list" />
+                <el-option label="课题列表 - 实践1V1定制" value="course_mode" />
+                <el-option label="课题列表 - 海外课题" value="course_field" />
+                <el-option label="竞赛详情" value="competition" />
+                <el-option label="竞赛与写作列表" value="competition_list" />
+                <el-option label="研学详情" value="research" />
+                <el-option label="学术研学列表" value="research_list" />
                 <el-option label="视频" value="video" />
                 <el-option label="外部链接" value="external" />
               </el-select>
@@ -244,7 +249,10 @@ import { Plus, Edit, Delete, Upload, View, Picture, InfoFilled } from '@element-
 import { getExploreList, createExplore, updateExplore, deleteExplore } from '@/api/explore'
 
 const linkTypeMap = {
-  course: '课题', competition: '竞赛', research: '研学', video: '视频', external: '外部链接'
+  course: '课题详情', course_list: '课题列表', course_mode: '课题-1V1定制', course_field: '课题-海外课题',
+  competition: '竞赛详情', competition_list: '竞赛列表',
+  research: '研学详情', research_list: '研学列表',
+  video: '视频', external: '外部链接'
 }
 
 const defaultImg = 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80'
