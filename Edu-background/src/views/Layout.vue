@@ -37,6 +37,10 @@
             <el-icon><Picture /></el-icon>
             <span>轮播图管理</span>
           </el-menu-item>
+          <el-menu-item index="/explores">
+            <el-icon><Collection /></el-icon>
+            <span>学术探索模块</span>
+          </el-menu-item>
           <el-menu-item index="/promotions">
             <el-icon><Collection /></el-icon>
             <span>探索成果模块</span>
@@ -132,7 +136,7 @@ const isCollapse = ref(false)
 
 const activeMenu = computed(() => {
   const path = route.path
-  if (['/banners', '/promotions', '/promo', '/projects', '/competitions', '/researches', '/videos', '/applications'].includes(path)) return path
+  if (['/banners', '/explores', '/promotions', '/promo', '/projects', '/competitions', '/researches', '/videos', '/applications'].includes(path)) return path
   return path
 })
 

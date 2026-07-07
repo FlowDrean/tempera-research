@@ -107,6 +107,11 @@
       </view>
       <view style="height: 100rpx;"></view>
     </scroll-view>
+
+    <!-- 悬浮耳机按钮 -->
+    <view class="floating-earphone-btn" @click="togglePromo">
+      <image class="earphone-icon-img" src="/static/icons/小耳机图标（新）.png" mode="aspectFit" />
+    </view>
   </view>
 </template>
 
@@ -250,6 +255,10 @@ onUnmounted(() => {
   uni.$off('filterResearchCountry')
   uni.$off('filterResearchSeason')
 })
+
+const togglePromo = () => {
+  uni.navigateTo({ url: '/pages/promo/promo' })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -628,5 +637,29 @@ onUnmounted(() => {
   color: #5B6CFF;
   white-space: nowrap;
   text-align: center;
+}
+
+/* ========== 悬浮耳机按钮 ========== */
+.floating-earphone-btn {
+  position: fixed;
+  bottom: 94px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #DAD7FF, #ffffff);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  z-index: 80;
+}
+
+.earphone-icon-img {
+  width: 28px;
+  height: 28px;
 }
 </style>

@@ -32,6 +32,12 @@ const routes = [
         meta: { title: '首页轮播图', icon: 'Picture' }
       },
       {
+        path: 'explores',
+        name: 'ExploreManage',
+        component: () => import('@/views/ExploreManage.vue'),
+        meta: { title: '学术探索模块', icon: 'Collection' }
+      },
+      {
         path: 'promotions',
         name: 'PromotionManage',
         component: () => import('@/views/PromotionManage.vue'),

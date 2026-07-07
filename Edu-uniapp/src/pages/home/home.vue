@@ -52,7 +52,26 @@
           <text class="section-header-title">学术探索</text>
           <text class="section-header-en">Research Practicum</text>
         </view>
-        <view class="featured-courses-row">
+        <view class="featured-courses-row" v-if="largeCard && smallCards.length >= 2">
+          <view class="featured-course-card featured-course-large"
+            :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${resolveImageUrl(largeCard.imageUrl)})` }"
+            @click="onExploreTap(largeCard)">
+            <text class="featured-course-label">{{ largeCard.title }}</text>
+            <text class="featured-course-sub">{{ largeCard.subtitle }}</text>
+          </view>
+          <view class="featured-courses-col">
+            <view class="featured-course-card featured-course-small"
+              v-for="card in smallCards"
+              :key="card.id"
+              :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${resolveImageUrl(card.imageUrl)})` }"
+              @click="onExploreTap(card)">
+              <text class="featured-course-label">{{ card.title }}</text>
+              <text class="featured-course-sub">{{ card.subtitle }}</text>
+            </view>
+          </view>
+        </view>
+        <!-- 兜底：无数据时显示默认 -->
+        <view class="featured-courses-row" v-else>
           <view class="featured-course-card featured-course-large"
             :style="{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80)' }"
             @click="onFeaturedTap('实践1V1定制')">
@@ -109,6 +128,7 @@ import TabBar from '@/components/TabBar.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 import { getBannerList } from '@/api/banner'
 import { getPromotionList } from '@/api/promotion'
+import { getExploreList } from '@/api/explore'
 import { resolveImageUrl } from '@/api/request'
 
 const { windowHeight, statusBarHeight } = uni.getWindowInfo()
@@ -127,6 +147,11 @@ const defaultBanners = [
 // Banner 数据（从后台管理获取）
 const banners = ref([...defaultBanners])
 const bannerCurrent = ref(0)
+
+// 学术探索卡片数据
+const exploreCards = ref([])
+const largeCard = computed(() => exploreCards.value.find(c => c.cardType === 'large') || null)
+const smallCards = computed(() => exploreCards.value.filter(c => c.cardType === 'small').slice(0, 2))
 
 onMounted(async () => {
   try {
@@ -158,6 +183,16 @@ onMounted(async () => {
   } catch {
     // 接口失败使用默认数据
     console.log('Promotion API 获取失败，使用默认数据')
+  }
+
+  try {
+    const exploreList = await getExploreList()
+    if (exploreList && exploreList.length > 0) {
+      exploreCards.value = exploreList
+    }
+  } catch {
+    // 接口失败使用默认数据
+    console.log('Explore API 获取失败，使用默认数据')
   }
 })
 
@@ -220,6 +255,47 @@ const onCategoryTap = (cat) => {
   } else {
     // 通过事件总线传递筛选条件
     uni.$emit('filterField', cat.name)
+    uni.switchTab({ url: '/pages/project/project' })
+  }
+}
+
+const onExploreTap = (card) => {
+  // 优先使用后台配置的跳转类型
+  if (card && card.linkType) {
+    switch (card.linkType) {
+      case 'course':
+        uni.navigateTo({ url: `/pages/project-detail/project-detail?id=${card.linkValue}` })
+        break
+      case 'competition':
+        uni.navigateTo({ url: `/pages/competition-detail/competition-detail?id=${card.linkValue}` })
+        break
+      case 'research':
+        uni.navigateTo({ url: `/pages/research-detail/research-detail?id=${card.linkValue}` })
+        break
+      case 'video':
+        uni.navigateTo({ url: `/pages/video-player/video-player?id=${card.linkValue}` })
+        break
+      case 'external':
+        uni.setClipboardData({ data: card.linkValue, success: () => {
+          uni.showToast({ title: '链接已复制', icon: 'none' })
+        }})
+        break
+      default:
+        break
+    }
+    return
+  }
+  // 兜底：按标题关键词跳转
+  const title = card?.title || ''
+  if (title.includes('研学')) {
+    uni.navigateTo({ url: '/pages/research/research' })
+  } else if (title.includes('实践') || title.includes('定制')) {
+    uni.$emit('filterMode', '实践1V1定制')
+    uni.switchTab({ url: '/pages/project/project' })
+  } else if (title.includes('海外')) {
+    uni.$emit('filterField', '海外课题')
+    uni.switchTab({ url: '/pages/project/project' })
+  } else {
     uni.switchTab({ url: '/pages/project/project' })
   }
 }

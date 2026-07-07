@@ -22,8 +22,8 @@
       <!-- 合作计划横幅 -->
       <view class="my-cooperation-banner">
         <view>
-          <text class="coop-title">加入CIS领航科研合作计划</text>
-          <text class="coop-desc">1V1定制科研项目，助力学术成长</text>
+          <text class="coop-title">加入坦培拉科研</text>
+          <text class="coop-desc">1V1定制专属前沿科研项目，助力学术长远深造</text>
         </view>
         <view class="my-cooperation-btn" @click="onApply">立即申请</view>
       </view>

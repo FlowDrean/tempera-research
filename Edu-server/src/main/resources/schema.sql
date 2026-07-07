@@ -189,6 +189,18 @@ CREATE TABLE IF NOT EXISTS `promotion` (
     `sort_order` INT DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `explore_module` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `title` VARCHAR(255) NOT NULL COMMENT '中文标题',
+    `subtitle` VARCHAR(255) DEFAULT '' COMMENT '英文副标题',
+    `image_url` VARCHAR(512) DEFAULT '' COMMENT '背景图片',
+    `card_type` VARCHAR(16) DEFAULT 'small' COMMENT '卡片类型 large/small',
+    `link_type` VARCHAR(32) DEFAULT '' COMMENT '跳转类型',
+    `link_value` VARCHAR(512) DEFAULT '' COMMENT '跳转值',
+    `sort_order` INT DEFAULT 0 COMMENT '排序',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `favorite` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `user_id` BIGINT NOT NULL,

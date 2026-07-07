@@ -81,3 +81,9 @@ INSERT INTO promotion (title, image_url, link_type, link_value, sort_order) VALU
 ('学术论文发表', 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&q=80', 'course', '', 3),
 ('海外研学体验', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&q=80', 'research', '', 4),
 ('1V1定制课题', 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&q=80', 'course', '', 5);
+
+-- 学术探索模块卡片
+INSERT INTO explore_module (title, subtitle, image_url, card_type, link_type, link_value, sort_order) VALUES
+('实践1V1定制', '1-on-1 Practice', 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80', 'large', 'course', '', 1),
+('海外课题', 'Overseas Research', 'https://images.unsplash.com/photo-1523050854058-8df90910e683?w=400&q=80', 'small', 'course', '', 2),
+('学术研学', 'Academic Tour', 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&q=80', 'small', 'research', '', 3);
