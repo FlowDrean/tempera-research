@@ -260,7 +260,7 @@ const onLogout = () => {
 }
 
 .my-cooperation-btn {
-  background: #5B6CFF;
+  background: #7B73E8;
   color: #ffffff;
   font-size: 11px;
   font-weight: bold;

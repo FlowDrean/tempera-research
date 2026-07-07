@@ -1,4 +1,4 @@
-const WS_URL = 'ws://localhost:8080/ws/chat'
+const WS_URL = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws/chat'
 
 let socket = null
 let messageHandlers = []
