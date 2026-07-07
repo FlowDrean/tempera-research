@@ -470,6 +470,7 @@ const onApply = () => {
   text-transform: uppercase;
   letter-spacing: 0.6rpx;
   margin-top: 8rpx;
+  display: block;
 }
 
 .comp-hero-meta {
