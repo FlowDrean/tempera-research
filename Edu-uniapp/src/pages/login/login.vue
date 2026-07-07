@@ -3,7 +3,7 @@
     <view class="login-form-wrap">
       <view class="login-header">
         <text class="login-logo">TEMPERA</text>
-        <text class="login-subtitle">坦培拉科研平台</text>
+        <text class="login-subtitle">坦培拉科研</text>
       </view>
 
       <view class="login-form">

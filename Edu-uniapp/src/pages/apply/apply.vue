@@ -184,7 +184,7 @@ const educationOptions = ['初中', '高中', '本科', '硕士', '博士']
 const gradeOptions = ['8年级', '9年级', '10年级', '11年级', '12年级']
 const languageOptions = ['雅思 IELTS', '托福 TOEFL']
 const durationOptions = ['1年', '2年', '3年以上']
-const fieldOptions = ['人文', '艺术', '理科']
+const fieldOptions = ['人文', '艺术科技', '理科']
 
 const onEducationChange = (e) => { form.education = educationOptions[e.detail.value] }
 const onGradeChange = (e) => { form.grade = gradeOptions[e.detail.value] }
@@ -297,6 +297,7 @@ const onSubmit = async () => {
 }
 
 .form-banner-sub {
+  display: block;
   font-size: 24rpx;
   opacity: 0.85;
   margin-top: 12rpx;

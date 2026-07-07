@@ -95,7 +95,7 @@
 
     <!-- 悬浮耳机按钮 -->
     <view class="floating-earphone-btn" @click="togglePromo">
-      <SvgIcon name="headphones" color="#5B6CFF" />
+      <image class="earphone-icon-img" src="/static/icons/小耳机图标（新）.png" mode="aspectFit" />
     </view>
 
     <!-- 底部导航栏 -->
@@ -549,5 +549,10 @@ const togglePromo = () => {
 
 .earphone-icon-text {
   font-size: 24px;
+}
+
+.earphone-icon-img {
+  width: 28px;
+  height: 28px;
 }
 </style>
