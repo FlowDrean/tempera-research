@@ -215,21 +215,33 @@ const levelTagClassMap = { '国家级': 'green', '国际级': 'orange' }
 const groupTagClassMap = { '个人': 'orange', '团队': 'green' }
 
 function mapDetailToDisplay(data) {
-  const posters = resolveImageUrl(data.poster)
+  // 优先使用详情宣传图，没有则用封面图
+  const heroImage = data.detailPoster || data.poster
+  const posters = resolveImageUrl(heroImage)
   const pdfMaterials = []
   if (data.achievementPdf) {
     pdfMaterials.push({ name: '竞赛成果 / COMPETITION ACHIEVEMENTS', url: data.achievementPdf })
   }
 
-  const infoLines = []
-  if (data.organizer) infoLines.push('主办单位：' + data.organizer)
-  if (data.targetAudience) infoLines.push('参赛对象：' + data.targetAudience)
-  if (data.participantType) infoLines.push('竞赛形式：' + data.participantType)
-  if (data.levelName) infoLines.push('竞赛级别：' + data.levelName)
+  // 优先使用后台录入的 infoText，没有则自动拼接
+  let infoText = data.infoText || ''
+  if (!infoText) {
+    const infoLines = []
+    if (data.organizer) infoLines.push('主办单位：' + data.organizer)
+    if (data.targetAudience) infoLines.push('参赛对象：' + data.targetAudience)
+    if (data.participantType) infoLines.push('竞赛形式：' + data.participantType)
+    if (data.levelName) infoLines.push('竞赛级别：' + data.levelName)
+    infoText = infoLines.join('\n')
+  }
 
-  const deadlineTextParts = []
-  if (data.startDate) deadlineTextParts.push('报名开始：' + data.startDate)
-  if (data.deadline) deadlineTextParts.push('报名截止：' + data.deadline)
+  // 优先使用后台录入的 deadlineText，没有则自动拼接
+  let deadlineText = data.deadlineText || ''
+  if (!deadlineText) {
+    const deadlineTextParts = []
+    if (data.startDate) deadlineTextParts.push('报名开始：' + data.startDate)
+    if (data.deadline) deadlineTextParts.push('报名截止：' + data.deadline)
+    deadlineText = deadlineTextParts.join('\n')
+  }
 
   return {
     id: data.id,
@@ -244,11 +256,11 @@ function mapDetailToDisplay(data) {
     level: data.levelName || '',
     groupType: data.participantType || '',
     groupTagClass: groupTagClassMap[data.participantType] || 'green',
-    introduction: data.description || '',
-    infoText: infoLines.join('\n'),
+    introduction: data.introduction || data.description || '',
+    infoText: infoText,
     rulesText: data.rules || '',
     awardsText: data.awards || '',
-    deadlineText: deadlineTextParts.join('\n'),
+    deadlineText: deadlineText,
     pdfMaterials: pdfMaterials
   }
 }

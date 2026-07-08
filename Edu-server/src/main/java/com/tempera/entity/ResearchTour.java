@@ -27,6 +27,8 @@ public class ResearchTour {
     private String notice;
     private String syllabusPdf;
     private String achievementPdf;
+    private String detailPoster;
+    private String introduction;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

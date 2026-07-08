@@ -28,6 +28,10 @@ public class Competition {
     private String rules;
     private String awards;
     private String achievementPdf;
+    private String detailPoster;
+    private String introduction;
+    private String infoText;
+    private String deadlineText;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

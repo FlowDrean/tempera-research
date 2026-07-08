@@ -214,14 +214,17 @@ function mapDetailToDisplay(data) {
     pdfMaterials.push({ name: '学术研学成果 / ACADEMIC FIELD OUTPUTS', url: data.achievementPdf })
   }
 
+  // 优先使用详情宣传图，没有则用封面图
+  const heroImage = data.detailPoster || data.poster
+
   return {
     id: data.id,
     title: data.titleCn || '',
     titleEn: data.titleEn || '',
-    poster: resolveImageUrl(data.poster),
+    poster: resolveImageUrl(heroImage),
     country: data.country || '',
     season: data.season || '',
-    introduction: data.description || '',
+    introduction: data.introduction || data.description || '',
     instructor: data.instructorName || '',
     school: data.instructorTitle || data.school || '',
     targetStudents: data.targetAudience || '',

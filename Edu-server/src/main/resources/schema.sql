@@ -114,6 +114,11 @@ CREATE TABLE IF NOT EXISTS `competition` (
     `organizer` VARCHAR(255) DEFAULT '',
     `rules` TEXT,
     `awards` TEXT,
+    `achievement_pdf` VARCHAR(512) DEFAULT '',
+    `detail_poster` VARCHAR(512) DEFAULT '' COMMENT '详情宣传图',
+    `introduction` TEXT COMMENT '介绍内容',
+    `info_text` TEXT COMMENT '项目信息',
+    `deadline_text` TEXT COMMENT '报名信息',
     `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -136,6 +141,10 @@ CREATE TABLE IF NOT EXISTS `research_tour` (
     `max_enrollment` INT DEFAULT 0,
     `schedule` TEXT,
     `notice` TEXT,
+    `syllabus_pdf` VARCHAR(512) DEFAULT '',
+    `achievement_pdf` VARCHAR(512) DEFAULT '',
+    `detail_poster` VARCHAR(512) DEFAULT '' COMMENT '详情宣传图',
+    `introduction` TEXT COMMENT '介绍内容',
     `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
