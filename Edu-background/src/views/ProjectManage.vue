@@ -735,23 +735,31 @@ function parseDetailData(data) {
 
 // Serialize structured data back to flat form fields before saving
 function serializeDetailData() {
+  // Tab 1 professor fields are authoritative for name/info — always sync into Tab 2
+  function syncProf(index, formName, formInfo) {
+    if (!formName && !formInfo) return
+    if (!detailProfessors.value[index]) {
+      detailProfessors.value[index] = { name: '', nameEn: '', avatar: '', bio: '' }
+    }
+    // Tab 1 value always wins for name (the quick-edit source takes priority)
+    if (formName) detailProfessors.value[index].name = formName
+    if (formInfo) detailProfessors.value[index].bio = formInfo
+  }
+  syncProf(0, form.value.professor1Name, form.value.professor1Info)
+  syncProf(1, form.value.professor2Name, form.value.professor2Info)
+  syncProf(2, form.value.professor3Name, form.value.professor3Info)
+
   // Professors → professorIntro JSON
   const validProfs = detailProfessors.value.filter(p => p.name || p.bio)
   form.value.professorIntro = validProfs.length ? JSON.stringify(validProfs) : ''
 
-  // Also update individual professor fields for backward compatibility
-  if (detailProfessors.value[0]) {
-    form.value.professor1Name = detailProfessors.value[0].name || ''
-    form.value.professor1Info = detailProfessors.value[0].bio || ''
-  }
-  if (detailProfessors.value[1]) {
-    form.value.professor2Name = detailProfessors.value[1].name || ''
-    form.value.professor2Info = detailProfessors.value[1].bio || ''
-  }
-  if (detailProfessors.value[2]) {
-    form.value.professor3Name = detailProfessors.value[2].name || ''
-    form.value.professor3Info = detailProfessors.value[2].bio || ''
-  }
+  // Sync back to individual fields for backward compatibility
+  form.value.professor1Name = detailProfessors.value[0]?.name || ''
+  form.value.professor1Info = detailProfessors.value[0]?.bio || ''
+  form.value.professor2Name = detailProfessors.value[1]?.name || ''
+  form.value.professor2Info = detailProfessors.value[1]?.bio || ''
+  form.value.professor3Name = detailProfessors.value[2]?.name || ''
+  form.value.professor3Info = detailProfessors.value[2]?.bio || ''
 
   // Suitable students → targetStudents (newline-separated)
   form.value.targetStudents = detailSuitableStudents.value.filter(Boolean).join('\n')
