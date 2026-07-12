@@ -12,6 +12,10 @@ target/
 # 运行时上传文件（含大体积视频，超出 Gitee 单文件限制）
 uploads/
 
+# 打包产物
+Edu-uniapp.zip
+*.zip
+
 # 编辑器/IDE
 .idea/
 .vscode/

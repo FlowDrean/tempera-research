@@ -167,12 +167,11 @@ const courses = ref([])
 const competitions = ref([])
 const researches = ref([])
 
-// Build professor list from entity
+// Build professor list from entity (卡片只展示前2位教授)
 function buildProfessors(p) {
   const profs = []
   if (p.professor1Name) profs.push({ name: p.professor1Name, school: p.professor1Info || '' })
   if (p.professor2Name) profs.push({ name: p.professor2Name, school: p.professor2Info || '' })
-  if (p.professor3Name) profs.push({ name: p.professor3Name, school: p.professor3Info || '' })
   return profs
 }
 

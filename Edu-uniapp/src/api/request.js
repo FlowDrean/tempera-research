@@ -1,5 +1,5 @@
-const BASE_URL = 'http://localhost:8080/api'
-const STATIC_BASE = 'http://localhost:8080'
+const BASE_URL = 'http://192.144.187.103/api'
+const STATIC_BASE = 'http://192.144.187.103'
 
 /**
  * Resolve image URL: if relative path like /uploads/..., prepend server base

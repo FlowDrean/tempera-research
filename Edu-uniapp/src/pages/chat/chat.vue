@@ -137,7 +137,7 @@ import SvgIcon from '@/components/SvgIcon.vue'
 import { useUserStore } from '@/stores/user'
 import { getChatHistory, getConversations } from '@/api/chat.js'
 import { connect, send, onMessage, close } from '@/utils/websocket.js'
-import { uploadFile } from '@/api/request.js'
+import { uploadFile, resolveImageUrl } from '@/api/request.js'
 
 const userStore = useUserStore()
 const isAdmin = computed(() => userStore.isAdmin)
@@ -251,7 +251,7 @@ const doUpload = (filePath) => {
   uploadFile(filePath).then((data) => {
     uni.hideLoading()
     const url = (typeof data === 'string') ? data : (data && data.url ? data.url : data)
-    const fullUrl = url.startsWith('http') ? url : ('http://localhost:8080' + url)
+    const fullUrl = resolveImageUrl(url)
     const payload = { type: 'message', content: fullUrl, msgType: 'image' }
     if (isAdmin.value && selectedUser.value) payload.targetUserId = selectedUser.value.userId
     send(payload)

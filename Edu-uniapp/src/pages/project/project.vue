@@ -179,7 +179,7 @@ const timeOptions = [
   { label: '12月', value: '12月' }
 ]
 
-// Build professor list from entity flat fields
+// Build professor list from entity flat fields (卡片只展示前2位教授)
 function buildProfessors(p) {
   const profs = []
   if (p.professor1Name) {
@@ -187,9 +187,6 @@ function buildProfessors(p) {
   }
   if (p.professor2Name) {
     profs.push({ name: p.professor2Name, school: p.professor2Info || '' })
-  }
-  if (p.professor3Name) {
-    profs.push({ name: p.professor3Name, school: p.professor3Info || '' })
   }
   return profs
 }
