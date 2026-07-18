@@ -73,8 +73,8 @@ Edu-Sys/
 │   │   └── websocket/                 # WebSocket 聊天处理器
 │   ├── src/main/resources/
 │   │   ├── application.yml            # 应用配置
-│   │   ├── schema.sql                 # 数据库建表脚本
-│   │   └── data.sql                   # 初始数据
+│   │   └── db/
+│   │       └── tempera_research.sql   # 数据库建表与初始数据
 │   └── pom.xml                        # Maven 配置
 ├── Edu-background/          # Vue 3 管理后台
 │   ├── src/
@@ -140,8 +140,7 @@ Edu-Sys/
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS tempera_research DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 # 导入建表脚本与初始数据
-mysql -u root -p tempera_research < Edu-server/src/main/resources/schema.sql
-mysql -u root -p tempera_research < Edu-server/src/main/resources/data.sql
+mysql -u root -p tempera_research < Edu-server/src/main/resources/db/tempera_research.sql
 ```
 
 ### 2. 启动后端服务
