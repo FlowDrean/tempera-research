@@ -1,6 +1,5 @@
 import { getToken } from '@/api/request'
-
-const WS_BASE_URL = 'ws://192.144.187.103'
+import { WS_URL } from '@/api/config'
 
 let socketTask = null
 let messageHandlers = []
@@ -19,7 +18,7 @@ export function connect() {
   }
 
   socketTask = uni.connectSocket({
-    url: `${WS_BASE_URL}/ws/chat?token=${token}`,
+    url: `${WS_URL}?token=${token}`,
     complete: () => {}
   })
 

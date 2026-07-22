@@ -1,5 +1,4 @@
-const BASE_URL = 'http://192.144.187.103/api'
-const STATIC_BASE = 'http://192.144.187.103'
+import { BASE_URL, STATIC_BASE } from './config'
 
 /**
  * Resolve image URL: if relative path like /uploads/..., prepend server base
