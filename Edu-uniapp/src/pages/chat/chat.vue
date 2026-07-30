@@ -33,6 +33,11 @@
 
     <!-- 聊天区域 -->
     <view v-else class="chat-area">
+      <!-- HTTP 轮询模式提示条 -->
+      <view v-if="pollingBanner" class="polling-banner">
+        <text class="polling-banner-text">⚠️ 暂用 HTTP 轮询模式，消息可能有延迟</text>
+      </view>
+
       <!-- 消息列表 -->
       <scroll-view
         scroll-y
@@ -135,8 +140,8 @@
 import { ref, computed, nextTick, watch, onUnmounted } from 'vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 import { useUserStore } from '@/stores/user'
-import { getChatHistory, getConversations } from '@/api/chat.js'
-import { connect, send, onMessage, close } from '@/utils/websocket.js'
+import { getChatHistory, getConversations, sendChatMessage, pollMessages } from '@/api/chat.js'
+import { connect, send, onMessage, close, onStatusChange, isConnected } from '@/utils/websocket.js'
 import { uploadFile, resolveImageUrl } from '@/api/request.js'
 
 const userStore = useUserStore()
@@ -159,6 +164,14 @@ const showPanel = ref(false)
 const conversations = ref([])
 const selectedUser = ref(null)
 let unsubMessage = null
+let unsubStatus = null
+
+// ========== HTTP 轮询兜底（WebSocket 域名未配置时自动启用） ==========
+const usePolling = ref(false)          // 是否使用 HTTP 轮询模式
+const pollingBanner = ref(false)       // 顶部提示条
+let pollTimer = null
+let lastPollTime = null                 // 上次轮询时间（用于增量拉取）
+const POLL_INTERVAL = 3000             // 轮询间隔 3s
 
 const hasInput = computed(() => inputText.value.trim().length > 0)
 
@@ -232,11 +245,25 @@ const scrollToBottom = () => {
 const sendMessage = () => {
   const text = inputText.value.trim()
   if (!text) return
-  const payload = { type: 'message', content: text }
+  const payload = { content: text }
   if (isAdmin.value && selectedUser.value) payload.targetUserId = selectedUser.value.userId
-  send(payload)
+
+  if (usePolling.value) {
+    // HTTP 备用通道：POST /api/chat/send
+    sendChatMessage(payload).then((data) => {
+      if (data) {
+        messages.value.push(data)
+        scrollToBottom()
+      }
+    }).catch((err) => {
+      console.error('HTTP send error:', err)
+      uni.showToast({ title: '发送失败，请重试', icon: 'none' })
+    })
+  } else {
+    // WebSocket 通道
+    send({ type: 'message', ...payload })
+  }
   inputText.value = ''
-  scrollToBottom()
 }
 
 const pickImage = () => {
@@ -252,10 +279,23 @@ const doUpload = (filePath) => {
     uni.hideLoading()
     const url = (typeof data === 'string') ? data : (data && data.url ? data.url : data)
     const fullUrl = resolveImageUrl(url)
-    const payload = { type: 'message', content: fullUrl, msgType: 'image' }
+    const payload = { content: fullUrl, msgType: 'image' }
     if (isAdmin.value && selectedUser.value) payload.targetUserId = selectedUser.value.userId
-    send(payload)
-    scrollToBottom()
+
+    if (usePolling.value) {
+      sendChatMessage(payload).then((resData) => {
+        if (resData) {
+          messages.value.push(resData)
+          scrollToBottom()
+        }
+      }).catch((err) => {
+        console.error('HTTP image send error:', err)
+        uni.showToast({ title: '发送失败，请重试', icon: 'none' })
+      })
+    } else {
+      send({ type: 'message', ...payload })
+      scrollToBottom()
+    }
   }).catch((err) => {
     uni.hideLoading()
     console.error('Upload error:', err)
@@ -269,23 +309,78 @@ const previewImage = (url) => {
 
 onUnmounted(() => {
   if (unsubMessage) unsubMessage()
+  if (unsubStatus) unsubStatus()
+  if (pollTimer) clearInterval(pollTimer)
   close()
 })
 
-// init
+// ========== HTTP 轮询逻辑 ==========
+const startPolling = () => {
+  if (pollTimer) return
+  usePolling.value = true
+  pollingBanner.value = true
+  // 3秒后自动隐藏提示条
+  setTimeout(() => { pollingBanner.value = false }, 5000)
+  console.log('Chat: WebSocket 不可用，切换到 HTTP 轮询模式')
+  pollTimer = setInterval(() => {
+    pollMessages(lastPollTime).then((list) => {
+      if (list && list.length > 0) {
+        for (const msg of list) {
+          // 去重：避免和 HTTP send 的回显重复
+          if (!messages.value.some(m => m.id === msg.id)) {
+            messages.value.push(msg)
+          }
+        }
+        lastPollTime = list[list.length - 1].createTime
+        scrollToBottom()
+      }
+    }).catch(() => { /* 轮询失败静默，下次继续 */ })
+  }, POLL_INTERVAL)
+}
+
+const stopPolling = () => {
+  if (pollTimer) {
+    clearInterval(pollTimer)
+    pollTimer = null
+  }
+  usePolling.value = false
+}
+
+// ========== 初始化 ==========
 if (!userStore.isLoggedIn) {
   uni.navigateTo({ url: '/pages/login/login' })
 } else {
   restoreDraft()
   connect()
+
+  // 监听 WebSocket 连接状态，不可用时自动切换到 HTTP 轮询
+  unsubStatus = onStatusChange((status) => {
+    if (status.domainError || (!status.connected && !usePolling.value)) {
+      if (!pollTimer) startPolling()
+    }
+    if (status.connected) {
+      stopPolling()
+    }
+  })
+
+  // 兜底：如果 WebSocket 在 2 秒内未能连接，启动轮询
+  setTimeout(() => {
+    if (!isConnected() && !pollTimer) {
+      startPolling()
+    }
+  }, 2000)
+
   unsubMessage = onMessage((data) => {
     if (data.type === 'message') {
       if (isAdmin.value && selectedUser.value) {
         const otherId = data.senderId === userStore.userId ? data.receiverId : data.senderId
         if (otherId !== selectedUser.value.userId && data.senderId !== selectedUser.value.userId) return
       }
-      messages.value.push(data)
-      scrollToBottom()
+      // WebSocket 收到消息时去重
+      if (!messages.value.some(m => m.id === data.id)) {
+        messages.value.push(data)
+        scrollToBottom()
+      }
     }
   })
   if (isAdmin.value) loadConversations()
@@ -356,6 +451,19 @@ if (!userStore.isLoggedIn) {
 
 /* ========== 聊天区域 ========== */
 .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ========== HTTP 轮询提示条 ========== */
+.polling-banner {
+  background: #fff3cd;
+  padding: 8px 16px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 0.5px solid #ffc107;
+}
+.polling-banner-text {
+  font-size: 24rpx;
+  color: #856404;
+}
 
 .msg-list { flex: 1; }
 

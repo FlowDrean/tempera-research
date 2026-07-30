@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,6 +136,114 @@ public class ChatController {
             conv.put("unreadCount", unreadCount);
             result.add(conv);
         }
+        return Result.ok(result);
+    }
+
+    /**
+     * 发送消息（HTTP 备用通道，用于 WebSocket 不可用时，如真机调试域名未配置）
+     */
+    @PostMapping("/send")
+    public Result<Map<String, Object>> send(@RequestBody Map<String, Object> payload) {
+        Long senderId = getCurrentUserId();
+        String content = (String) payload.get("content");
+        if (content == null || content.trim().isEmpty()) {
+            return Result.fail("消息内容不能为空");
+        }
+        content = content.trim();
+
+        // determine receiver: admin → targetUser, user → admin
+        Long receiverId;
+        if (ADMIN_ID.equals(senderId)) {
+            Object target = payload.get("targetUserId");
+            if (target == null) return Result.fail("缺少目标用户");
+            receiverId = ((Number) target).longValue();
+        } else {
+            receiverId = ADMIN_ID;
+        }
+
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSenderId(senderId);
+        chatMessage.setReceiverId(receiverId);
+        chatMessage.setContent(content);
+        String msgType = (String) payload.get("msgType");
+        if (msgType != null) {
+            chatMessage.setMsgType(msgType);
+        }
+        chatMessage.setIsRead(0);
+        chatMessageService.save(chatMessage);
+
+        // build response
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("type", "message");
+        out.put("id", chatMessage.getId());
+        out.put("senderId", senderId);
+        out.put("receiverId", receiverId);
+        out.put("content", chatMessage.getContent());
+        if (msgType != null) {
+            out.put("msgType", msgType);
+        }
+        out.put("createTime", chatMessage.getCreateTime() != null
+                ? chatMessage.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                : LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        return Result.ok(out);
+    }
+
+    /**
+     * 轮询新消息（HTTP 备用通道，用于 WebSocket 不可用时）
+     * 返回当前用户上次拉取之后的新消息（也包括自己刚通过 POST /send 发出的回显）
+     */
+    @GetMapping("/poll")
+    public Result<List<Map<String, Object>>> poll(
+            @RequestParam(required = false) String since) {
+        Long userId = getCurrentUserId();
+        Long peerId = ADMIN_ID.equals(userId) ? null : ADMIN_ID;
+
+        LambdaQueryWrapper<ChatMessage> wrapper = new LambdaQueryWrapper<>();
+        if (peerId != null) {
+            wrapper.and(w -> w
+                    .eq(ChatMessage::getSenderId, userId).eq(ChatMessage::getReceiverId, peerId)
+                    .or()
+                    .eq(ChatMessage::getSenderId, peerId).eq(ChatMessage::getReceiverId, userId));
+        } else {
+            // admin polls all messages directed to them
+            wrapper.eq(ChatMessage::getReceiverId, ADMIN_ID);
+        }
+        if (since != null && !since.isEmpty()) {
+            try {
+                LocalDateTime sinceTime = LocalDateTime.parse(since, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                wrapper.gt(ChatMessage::getCreateTime, sinceTime);
+            } catch (Exception ignored) {}
+        }
+        wrapper.orderByAsc(ChatMessage::getCreateTime);
+
+        List<ChatMessage> list = chatMessageService.list(wrapper);
+
+        // mark as read
+        List<ChatMessage> toUpdate = list.stream()
+                .filter(m -> m.getReceiverId().equals(userId) && m.getIsRead() == 0)
+                .peek(m -> m.setIsRead(1))
+                .collect(Collectors.toList());
+        if (!toUpdate.isEmpty()) {
+            chatMessageService.updateBatchById(toUpdate);
+        }
+
+        List<Map<String, Object>> result = list.stream().map(msg -> {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("type", "message");
+            map.put("id", msg.getId());
+            map.put("senderId", msg.getSenderId());
+            map.put("receiverId", msg.getReceiverId());
+            map.put("content", msg.getContent());
+            if (msg.getMsgType() != null) {
+                map.put("msgType", msg.getMsgType());
+            }
+            map.put("createTime", msg.getCreateTime() != null
+                    ? msg.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                    : "");
+            return map;
+        }).collect(Collectors.toList());
+
         return Result.ok(result);
     }
 
