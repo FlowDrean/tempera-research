@@ -16,6 +16,14 @@ uploads/
 Edu-uniapp.zip
 *.zip
 
+# 设计素材与临时文件
+design-assets/
+*.bak
+*.md.bak
+原图.jpg
+学术探索模块*.jpg
+未完成功能文档.md
+
 # 编辑器/IDE
 .idea/
 .vscode/
