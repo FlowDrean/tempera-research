@@ -14,11 +14,11 @@
     </view>
 
     <scroll-view enable-flex scroll-y class="page-content" :style="{ height: scrollHeight + 'px' }">
-      <!-- Banner 轮播（2.5:1，高度按屏幕宽度自适应） -->
-      <view class="home-banner" :style="{ height: bannerHeight }">
+      <!-- Banner 轮播 -->
+      <view class="home-banner" :style="{ height: bannerHeight + 'px' }">
         <swiper
           class="banner-swiper"
-          :indicator-dots="banners.length > 1"
+          indicator-dots
           indicator-color="rgba(255,255,255,0.4)"
           indicator-active-color="#ffffff"
           autoplay
@@ -27,19 +27,17 @@
           circular
           @change="onBannerChange"
         >
-          <swiper-item v-for="(item, index) in banners" :key="item.id || index">
-            <view class="banner-slide" @click="onBannerTap(item)">
-              <image
-                v-if="item.imageUrl && !failedBannerImages[index]"
-                class="banner-image"
-                :src="item.imageUrl"
-                mode="aspectFill"
-                @error="onBannerImageError(index)"
-              />
-              <view v-else class="banner-bg" :style="{ background: item.bg }"></view>
-              <view v-if="item.title || item.subtitle" class="banner-text-wrap">
-                <text v-if="item.title" class="banner-slide-title">{{ item.title }}</text>
-                <text v-if="item.subtitle" class="banner-slide-sub">{{ item.subtitle }}</text>
+          <swiper-item v-for="(item, index) in banners" :key="index">
+            <view class="banner-slide" :style="{ background: item.bg }" @click="onBannerTap(item)">
+              <!-- 用 background 显示上传图片，background-position: center 保证居中裁切，真机不走 image 组件域名校验 -->
+              <view
+                v-if="item.imageUrl"
+                class="banner-slide-bg"
+                :style="{ backgroundImage: `url(${item.imageUrl})` }"
+              ></view>
+              <view class="banner-slide-content">
+                <text class="banner-slide-title">{{ item.title }}</text>
+                <text class="banner-slide-sub">{{ item.subtitle }}</text>
               </view>
             </view>
           </swiper-item>
@@ -64,7 +62,7 @@
         </view>
         <view class="featured-courses-row" v-if="largeCard && smallCards.length >= 2">
           <view class="featured-course-card featured-course-large"
-            :style="{ backgroundImage: `url(${resolveImageUrl(largeCard.imageUrl)})` }"
+            :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${resolveImageUrl(largeCard.imageUrl)})` }"
             @click="onExploreTap(largeCard)">
             <text class="featured-course-label">{{ largeCard.title }}</text>
             <text class="featured-course-sub">{{ largeCard.subtitle }}</text>
@@ -73,7 +71,7 @@
             <view class="featured-course-card featured-course-small"
               v-for="card in smallCards"
               :key="card.id"
-              :style="{ backgroundImage: `url(${resolveImageUrl(card.imageUrl)})` }"
+              :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${resolveImageUrl(card.imageUrl)})` }"
               @click="onExploreTap(card)">
               <text class="featured-course-label">{{ card.title }}</text>
               <text class="featured-course-sub">{{ card.subtitle }}</text>
@@ -83,20 +81,20 @@
         <!-- 兜底：无数据时显示默认 -->
         <view class="featured-courses-row" v-else>
           <view class="featured-course-card featured-course-large"
-            :style="{ backgroundImage: 'url(https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80)' }"
+            :style="{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80)' }"
             @click="onFeaturedTap('实践1V1定制')">
             <text class="featured-course-label">实践1V1定制</text>
             <text class="featured-course-sub">1-on-1 Practice</text>
           </view>
           <view class="featured-courses-col">
             <view class="featured-course-card featured-course-small"
-              :style="{ backgroundImage: 'url(https://images.unsplash.com/photo-1523050854058-8df90910e683?w=400&q=80)' }"
+              :style="{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(https://images.unsplash.com/photo-1523050854058-8df90910e683?w=400&q=80)' }"
               @click="onFeaturedTap('海外课题')">
               <text class="featured-course-label">海外课题</text>
               <text class="featured-course-sub">Overseas Research</text>
             </view>
             <view class="featured-course-card featured-course-small"
-              :style="{ backgroundImage: 'url(https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&q=80)' }"
+              :style="{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&q=80)' }"
               @click="onFeaturedTap('研学')">
               <text class="featured-course-label">学术研学</text>
               <text class="featured-course-sub">Academic Tour</text>
@@ -145,34 +143,8 @@ const { windowHeight, statusBarHeight, windowWidth } = uni.getWindowInfo()
 // 固定区域: nav-bar(statusBarHeight+44) + search-box(56) = statusBarHeight + 100
 const scrollHeight = computed(() => windowHeight - statusBarHeight - 100)
 
-// Banner 保持 2.5:1 宽高比：容器宽 = 屏幕宽 - 左右 margin 14px
-const bannerHeight = `${Math.round((windowWidth - 28) / 2.5)}px`
-
-// 后台图片是 http://IP 地址，真机不允许加载；同图在本地打包一份，按文件名兜底
-// （后台切到 HTTPS 域名后会优先使用网络图，本地兜底自动失效）
-const localBannerMap = {
-  '734c094491604dbf86c9c130a456ab68.jpg': '/static/banner/banner-1.jpg',
-  '31f4bd0361a643f4a4c6219a0b4d4100.jpg': '/static/banner/banner-2.jpg',
-  '59b1e9c9f7cb4436b186bd54d47eb635.jpg': '/static/banner/banner-3.jpg',
-  'e62014a09b4b4121a35b04d37f4d6a79.jpg': '/static/banner/banner-4.jpg',
-  'f10be1c1d31e4bba96032356f70a5ea9.jpg': '/static/banner/banner-5.jpg'
-}
-
-// 图片加载失败记录（避免轮播出现空白）
-const failedBannerImages = ref({})
-
-function onBannerImageError(index) {
-  failedBannerImages.value[index] = true
-}
-
-// 解析图片地址：HTTPS 网络图直接用；http 图能匹配到本地兜底图则用本地
-function getBannerImage(url) {
-  const remote = resolveImageUrl(url)
-  if (!remote) return ''
-  if (remote.startsWith('https://')) return remote
-  const fileName = remote.split('?')[0].split('/').pop()
-  return localBannerMap[fileName] || remote
-}
+// 轮播容器宽度 = 屏幕宽度 - 左右外边距(14px * 2)，高度按 2.5:1 自适应
+const bannerHeight = computed(() => (windowWidth - 28) / 2.5)
 
 // 默认兜底数据
 const defaultBanners = [
@@ -201,8 +173,9 @@ onMounted(async () => {
         title: item.title,
         subtitle: item.subtitle || '',
         // bgColor 优先级高于 imageUrl，与后台管理系统一致
-        imageUrl: item.bgColor ? '' : getBannerImage(item.imageUrl),
         bg: item.bgColor || 'linear-gradient(135deg, #5B6CFF, #B1F0FF)',
+        // 上传图片地址，模板里用 background 居中显示
+        imageUrl: item.bgColor ? '' : resolveImageUrl(item.imageUrl || ''),
         linkType: item.linkType || '',
         linkValue: item.linkValue || ''
       }))
@@ -449,10 +422,11 @@ const togglePromo = () => {
   padding-bottom: 20px;
 }
 
-/* ========== Banner（2.5:1） ========== */
+/* ========== Banner ========== */
 .home-banner {
-  margin: 12px 14px;
-  height: 150px; /* 兜底值，实际高度由 bannerHeight 按屏幕宽度换算 */
+  /* 底部加大到 20px，使下方模块整体下移，确保与轮播图片保持间距 */
+  margin: 12px 14px 20px;
+  /* 高度不写死，由 bannerHeight 按 2.5:1 自适应计算后通过内联样式设置 */
   border-radius: 12px;
   position: relative;
   overflow: hidden;
@@ -464,34 +438,36 @@ const togglePromo = () => {
 }
 
 .banner-slide {
-  position: relative;
-  width: 100%;
   height: 100%;
-  overflow: hidden;
-  border-radius: 12px;
-}
-
-.banner-image,
-.banner-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.banner-text-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   padding: 24px;
+  /* padding 包含在 100% 高度内，图片才能与轮播容器等高，避免底部被裁切/被下方模块遮挡 */
+  box-sizing: border-box;
   color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 上传图片用 background 铺满轮播区域，background-position: center 保证居中裁切 */
+.banner-slide-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.banner-slide-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .banner-slide-title {
