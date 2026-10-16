@@ -60,45 +60,33 @@
           <text class="section-header-title">学术探索</text>
           <text class="section-header-en">Research Practicum</text>
         </view>
+
+        <!-- 有大图 + 2 小图数据：文案由图片本身承载，容器只展示完整图片 -->
         <view class="featured-courses-row" v-if="largeCard && smallCards.length >= 2">
           <view class="featured-course-card featured-course-large"
-            :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${resolveImageUrl(largeCard.imageUrl)})` }"
-            @click="onExploreTap(largeCard)">
-            <text class="featured-course-label">{{ largeCard.title }}</text>
-            <text class="featured-course-sub">{{ largeCard.subtitle }}</text>
-          </view>
+            :style="{ backgroundImage: 'url(' + resolveImageUrl(largeCard.imageUrl) + ')' }"
+            @click="onExploreTap(largeCard)"></view>
           <view class="featured-courses-col">
             <view class="featured-course-card featured-course-small"
               v-for="card in smallCards"
               :key="card.id"
-              :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${resolveImageUrl(card.imageUrl)})` }"
-              @click="onExploreTap(card)">
-              <text class="featured-course-label">{{ card.title }}</text>
-              <text class="featured-course-sub">{{ card.subtitle }}</text>
-            </view>
+              :style="{ backgroundImage: 'url(' + resolveImageUrl(card.imageUrl) + ')' }"
+              @click="onExploreTap(card)"></view>
           </view>
         </view>
+
         <!-- 兜底：无数据时显示默认 -->
         <view class="featured-courses-row" v-else>
           <view class="featured-course-card featured-course-large"
-            :style="{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80)' }"
-            @click="onFeaturedTap('实践1V1定制')">
-            <text class="featured-course-label">实践1V1定制</text>
-            <text class="featured-course-sub">1-on-1 Practice</text>
-          </view>
+            style="background-image: url(https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80);"
+            @click="onFeaturedTap('实践1V1定制')"></view>
           <view class="featured-courses-col">
             <view class="featured-course-card featured-course-small"
-              :style="{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(https://images.unsplash.com/photo-1523050854058-8df90910e683?w=400&q=80)' }"
-              @click="onFeaturedTap('海外课题')">
-              <text class="featured-course-label">海外课题</text>
-              <text class="featured-course-sub">Overseas Research</text>
-            </view>
+              style="background-image: url(https://images.unsplash.com/photo-1523050854058-8df90910e683?w=400&q=80);"
+              @click="onFeaturedTap('海外课题')"></view>
             <view class="featured-course-card featured-course-small"
-              :style="{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&q=80)' }"
-              @click="onFeaturedTap('研学')">
-              <text class="featured-course-label">学术研学</text>
-              <text class="featured-course-sub">Academic Tour</text>
-            </view>
+              style="background-image: url(https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&q=80);"
+              @click="onFeaturedTap('研学')"></view>
           </view>
         </view>
       </view>
@@ -563,12 +551,14 @@ const togglePromo = () => {
 /* ========== 特色课题卡片 ========== */
 .featured-courses-row {
   display: flex;
+  align-items: stretch;
   gap: 10px;
   padding: 0 0 10px;
 }
 
 .featured-courses-col {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -576,46 +566,25 @@ const togglePromo = () => {
 
 .featured-course-card {
   border-radius: 14px;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 14px;
-  color: #ffffff;
-  position: relative;
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .featured-course-large {
-  flex: 1.35;
-  height: auto;
+  flex: none;
+  box-sizing: content-box;
+  width: 57.1429%; /* 4/7，左侧大图占宽 */
+  height: 0;
+  padding-top: 42.8571%; /* 3/7，撑出 4:3 大图容器 */
 }
 
 .featured-course-small {
   flex: 1;
-  height: auto;
-  padding: 18px;
-}
-
-.featured-course-label {
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.featured-course-small .featured-course-label {
-  font-size: 17px;
-}
-
-.featured-course-sub {
-  font-size: 11px;
-  opacity: 0.85;
-  margin-top: 4px;
-  letter-spacing: 1px;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  min-height: 0;
 }
 
 /* ========== 探索成果 横向滚动 ========== */
